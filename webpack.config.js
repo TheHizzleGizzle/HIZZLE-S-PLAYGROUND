@@ -77,6 +77,7 @@ module.exports = [
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name]/[name].js',
+      publicPath: './',
       clean: false
     },
     target: 'electron-renderer',

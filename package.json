@@ -67,6 +67,9 @@
       ],
       "icon": "build/icon.ico"
     },
+    "asarUnpack": [
+      "dist/main/preload.js"
+    ],
     "nsis": {
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
