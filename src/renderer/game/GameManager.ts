@@ -8,6 +8,7 @@ import { WorldScene } from './scenes/WorldScene';
 import { BattleScene } from './scenes/BattleScene';
 import { MenuScene } from './scenes/MenuScene';
 import { BreedingScene } from './scenes/BreedingScene';
+import { EncounterScene } from './scenes/EncounterScene';
 
 export class GameManager {
   private game: Phaser.Game;
@@ -19,7 +20,7 @@ export class GameManager {
       height: 720,
       parent: container,
       backgroundColor: '#2c3e50',
-      scene: [MenuScene, WorldScene, BattleScene, BreedingScene],
+      scene: [MenuScene, WorldScene, BattleScene, BreedingScene, EncounterScene],
       physics: {
         default: 'arcade',
         arcade: {

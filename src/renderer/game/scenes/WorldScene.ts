@@ -87,5 +87,23 @@ export class WorldScene extends Phaser.Scene {
         this.player.body!.velocity.y * 0.707
       );
     }
+
+    // Random encounters (10% chance per second when moving on grass)
+    if (this.player.body!.velocity.x !== 0 || this.player.body!.velocity.y !== 0) {
+      if (Math.random() < 0.001) { // Very low chance per frame
+        this.triggerEncounter();
+      }
+    }
+  }
+
+  private triggerEncounter(): void {
+    // Stop player movement
+    this.player.setVelocity(0);
+    
+    // Transition to encounter scene
+    this.scene.start('EncounterScene', {
+      biome: 'grassland', // Could be determined by current tile
+      playerLevel: 5 // Could be calculated from player's creatures
+    });
   }
 }
