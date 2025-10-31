@@ -27,7 +27,7 @@ function createWindow(): void {
     mainWindow.loadURL('http://localhost:8080');
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, 'index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../index.html'));
   }
 
   mainWindow.on('closed', () => {
