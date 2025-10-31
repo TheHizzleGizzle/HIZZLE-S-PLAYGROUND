@@ -2,54 +2,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-<<<<<<< Current (Your changes)
-module.exports = {
-  entry: {
-    main: './src/main/main.ts',
-    renderer: './src/renderer/index.tsx'
-  },
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name]/[name].js',
-    clean: true
-  },
-  target: 'electron-renderer',
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            transpileOnly: true
-          }
-        },
-        exclude: /node_modules/
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.(png|jpg|jpeg|gif|svg)$/,
-        type: 'asset/resource'
-      },
-      {
-        test: /\.ttf$/,
-        type: 'asset/resource'
-      }
-    ]
-  },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.jsx'],
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@game': path.resolve(__dirname, 'src/renderer/game'),
-      '@editor': path.resolve(__dirname, 'src/renderer/editor'),
-      '@ui': path.resolve(__dirname, 'src/renderer/ui'),
-      '@store': path.resolve(__dirname, 'src/renderer/store'),
-      '@shared': path.resolve(__dirname, 'src/shared')
-=======
 module.exports = [
   {
     name: 'main',
@@ -82,7 +34,6 @@ module.exports = [
     node: {
       __dirname: false,
       __filename: false
->>>>>>> Incoming (Background Agent changes)
     }
   },
   {
