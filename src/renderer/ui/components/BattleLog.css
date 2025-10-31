@@ -1,0 +1,100 @@
+/**
+ * Battle Log Styles
+ */
+
+.battle-log {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.battle-log-title {
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.3);
+  font-weight: bold;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.battle-log-content {
+  padding: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.log-entry {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #ecf0f1;
+  background: rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.log-entry.damage {
+  border-left: 3px solid #e74c3c;
+}
+
+.log-entry.heal {
+  border-left: 3px solid #2ecc71;
+}
+
+.log-entry.buff {
+  border-left: 3px solid #3498db;
+}
+
+.log-entry.debuff {
+  border-left: 3px solid #f39c12;
+}
+
+.log-entry.ability {
+  border-left: 3px solid #9b59b6;
+}
+
+.log-entry.system {
+  border-left: 3px solid #95a5a6;
+  font-weight: bold;
+}
+
+.log-turn {
+  color: #bdc3c7;
+  margin-right: 8px;
+}
+
+.log-message {
+  color: #ffffff;
+}
+
+.battle-log-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.battle-log-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.battle-log-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.battle-log-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
