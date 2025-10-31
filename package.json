@@ -8,7 +8,9 @@
     "dev": "webpack serve --mode development",
     "electron": "electron .",
     "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:8080 && electron .\"",
-    "start": "npm run electron:dev"
+    "start": "npm run electron:dev",
+    "build:win": "npm run build && electron-builder --win",
+    "build:win:dir": "npm run build && electron-builder --win --dir"
   },
   "keywords": ["game", "coding", "pokemon", "education"],
   "author": "",
@@ -38,6 +40,39 @@
     "electron": "^28.0.0",
     "concurrently": "^8.2.2",
     "wait-on": "^7.2.0",
-    "copy-webpack-plugin": "^11.0.0"
+    "copy-webpack-plugin": "^11.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.codecreature.app",
+    "productName": "CodeCreature",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CodeCreature"
+    }
   }
 }
