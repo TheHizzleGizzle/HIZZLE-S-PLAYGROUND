@@ -4,24 +4,39 @@
  */
 
 import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
 
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
-  // Get the correct path for preload script
-  // When packaged with asarUnpack, preload is in app.asar.unpacked
-  // When not packaged, it's in __dirname
-  let preloadPath: string;
-  if (app.isPackaged) {
-    // In production, check if unpacked first, then fallback to asar
-    const unpackedPath = path.join(process.resourcesPath, 'app.asar.unpacked', 'dist', 'main', 'preload.js');
-    const asarPath = path.join(__dirname, 'preload.js');
-    // Try unpacked first (if asarUnpack is used), otherwise use asar path
-    preloadPath = fs.existsSync(unpackedPath) ? unpackedPath : asarPath;
-  } else {
-    preloadPath = path.join(__dirname, 'preload.js');
+  // Resolve preload script by checking common build and source locations
+  const preloadCandidates = [
+    path.join(__dirname, 'preload.js'),
+    ...(process.resourcesPath ? [path.join(process.resourcesPath, 'app.asar.unpacked', 'dist', 'main', 'preload.js')] : []),
+    path.join(app.getAppPath(), 'dist', 'main', 'preload.js'),
+    path.join(app.getAppPath(), 'src', 'main', 'preload.js')
+  ];
+
+  const preloadPath = preloadCandidates.find((candidate) => fs.existsSync(candidate));
+
+  if (!preloadPath) {
+    throw new Error('Unable to locate preload script. Ensure dist/main/preload.js is included in the build.');
+  }
+
+  // Resolve index.html by checking common build and source locations
+  const indexPathCandidates = [
+    path.join(__dirname, '..', 'index.html'),
+    ...(process.resourcesPath ? [path.join(process.resourcesPath, 'app.asar.unpacked', 'dist', 'renderer', 'index.html')] : []),
+    path.join(app.getAppPath(), 'dist', 'renderer', 'index.html'),
+    path.join(app.getAppPath(), 'src', 'renderer', 'index.html')
+  ];
+
+  const indexPath = indexPathCandidates.find((candidate) => fs.existsSync(candidate));
+
+  if (!indexPath) {
+    const errorMsg = 'Unable to locate index.html. Ensure dist/renderer/index.html is included in the build.';
+    throw new Error(errorMsg);
   }
 
   mainWindow = new BrowserWindow({
@@ -42,33 +57,38 @@ function createWindow(): void {
     mainWindow.loadURL('http://localhost:8080');
     mainWindow.webContents.openDevTools();
   } else {
-    // In production, handle packaged and unpackaged paths
-    let indexPath: string;
-    if (app.isPackaged) {
-      // When packaged, use app.getAppPath() which points to app.asar/dist
-      indexPath = path.join(app.getAppPath(), 'index.html');
-    } else {
-      // In development build, __dirname is dist/main, so index.html is at ../index.html
-      indexPath = path.join(__dirname, '../index.html');
-    }
     console.log('Loading index.html from:', indexPath);
     mainWindow.loadFile(indexPath).catch((error) => {
       console.error('Failed to load index.html:', error);
-      // Fallback: try relative path from __dirname
-      const fallbackPath = path.join(__dirname, '../index.html');
-      console.log('Trying fallback path:', fallbackPath);
-      mainWindow.loadFile(fallbackPath).catch((err) => {
-        console.error('Failed to load from fallback path:', err);
-      });
     });
   }
 
-  // Open DevTools temporarily for debugging (remove in final release)
-  mainWindow.webContents.openDevTools();
+  // Log all errors and events
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    console.error('Failed to load:', errorCode, errorDescription, validatedURL);
+  });
 
-  // Log errors
-  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-    console.error('Failed to load:', errorCode, errorDescription);
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('Page finished loading');
+    // Check if script loaded (development only)
+    if (process.env.NODE_ENV !== 'production') {
+      mainWindow.webContents.executeJavaScript(`
+        console.log('Document ready state:', document.readyState);
+        console.log('Scripts loaded:', Array.from(document.scripts).map(s => s.src));
+        console.log('Root element:', document.getElementById('root') ? 'Found' : 'NOT FOUND');
+      `).catch(err => console.error('Execute JS error:', err));
+    }
+  });
+
+  mainWindow.webContents.on('console-message', (event, level, message) => {
+    // Only forward renderer logs in development, or for warnings/errors in production
+    // Level values: 0=verbose, 1=info, 2=warning, 3=error
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const isImportantLevel = level >= 2; // Warning (2) or Error (3)
+    
+    if (isDevelopment || isImportantLevel) {
+      console.log(`[Renderer ${level}]:`, message);
+    }
   });
 
   mainWindow.on('closed', () => {

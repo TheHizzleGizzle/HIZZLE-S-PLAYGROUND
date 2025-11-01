@@ -122,7 +122,8 @@ module.exports = [
       new HtmlWebpackPlugin({
         template: './src/renderer/index.html',
         filename: 'index.html',
-        chunks: ['renderer']
+        chunks: ['renderer'],
+        publicPath: './'
       }),
       new CopyWebpackPlugin({
         patterns: [
